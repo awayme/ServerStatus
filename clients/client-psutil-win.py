@@ -11,7 +11,7 @@ SERVER = "127.0.0.1"
 USER = "s01"
 
 
-
+DISK_ONLY = '' #'C:\\'
 PORT = 35601
 PASSWORD = "USER_DEFAULT_PASSWORD"
 INTERVAL = 1
@@ -50,6 +50,8 @@ def get_hdd():
         if not disk.device in disks and disk.fstype.lower() in valid_fs:
             disks[disk.device] = disk.mountpoint
     for disk in disks.values():
+        if DISK_ONLY and DISK_ONLY != disk:
+            continue
         usage = psutil.disk_usage(disk)
         size += usage.total
         used += usage.used
@@ -245,6 +247,8 @@ if __name__ == '__main__':
             PASSWORD = argc.split('PASSWORD=')[-1]
         elif 'INTERVAL' in argc:
             INTERVAL = int(argc.split('INTERVAL=')[-1])
+        elif 'DISK_ONLY' in argc:
+            DISK_ONLY = argc.split('DISK_ONLY=')[-1]
     socket.setdefaulttimeout(30)
     get_packetLostRate()
     while 1:
